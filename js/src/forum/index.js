@@ -6,6 +6,8 @@ import UserCard from 'flarum/components/UserCard';
 import UserControls from 'flarum/utils/UserControls';
 import StatusModal from './components/StatusModal';
 
+/* global m */
+
 app.initializers.add('clarkwinkelmann/status', () => {
     extend(SessionDropdown.prototype, 'items', function (items) {
         if (app.session.user.attribute('clarkwinkelmannStatusCanEdit')) {
@@ -40,10 +42,10 @@ app.initializers.add('clarkwinkelmann/status', () => {
 
         if (user.attribute('clarkwinkelmannStatusEmoji') || user.attribute('clarkwinkelmannStatusText')) {
             items.add('clarkwinkelmann-status', m('.ClarkWinkelmannStatus', [
-                user.attribute('clarkwinkelmannStatusEmoji'),
+                user.attribute('clarkwinkelmannStatusEmoji') ? m('span.ClarkWinkelmannStatusEmoji', user.attribute('clarkwinkelmannStatusEmoji')) : null,
                 ' ',
-                user.attribute('clarkwinkelmannStatusText'),
-            ]));
+                user.attribute('clarkwinkelmannStatusText') ? m('span.ClarkWinkelmannStatusText', user.attribute('clarkwinkelmannStatusText')) : null,
+            ]), -100);
         }
     });
 });
