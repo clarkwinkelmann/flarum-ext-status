@@ -2,13 +2,11 @@
 
 namespace ClarkWinkelmann\Status\Policies;
 
-use Flarum\User\AbstractPolicy;
+use Flarum\User\Access\AbstractPolicy;
 use Flarum\User\User;
 
 class UserPolicy extends AbstractPolicy
 {
-    protected $model = User::class;
-
     public function clarkwinkelmannStatusEdit(User $actor, User $user)
     {
         if ($actor->hasPermission('clarkwinkelmann-status.mod')) {

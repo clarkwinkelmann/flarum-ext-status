@@ -1,18 +1,21 @@
-import app from 'flarum/app';
-import Modal from 'flarum/components/Modal';
-import Button from 'flarum/components/Button';
-import Select from 'flarum/components/Select';
+import Modal from 'flarum/common/components/Modal';
+import Button from 'flarum/common/components/Button';
+import Select from 'flarum/common/components/Select';
 
 import emojiMap from 'simple-emoji-map';
+
+/* global app, m */
 
 const translationPrefix = 'clarkwinkelmann-status.forum.modal.';
 
 export default class StatusModal extends Modal {
-    init() {
+    oninit(vnode) {
+        super.oninit(vnode);
+
         this.dirty = false;
         this.loading = false;
-        this.emoji = this.props.user.attribute('clarkwinkelmannStatusEmoji') || '';
-        this.text = this.props.user.attribute('clarkwinkelmannStatusText') || '';
+        this.emoji = this.attrs.user.attribute('clarkwinkelmannStatusEmoji') || '';
+        this.text = this.attrs.user.attribute('clarkwinkelmannStatusText') || '';
 
         this.emojiPickOptions = {};
 
@@ -69,16 +72,15 @@ export default class StatusModal extends Modal {
                     loading: this.loading,
                     className: 'Button Button--primary',
                     type: 'submit',
-                    children: app.translator.trans(translationPrefix + 'submit'),
-                }),
+                }, app.translator.trans(translationPrefix + 'submit')),
                 ' ',
                 Button.component({
-                    disabled: !this.props.user.attribute('clarkwinkelmannStatusEmoji') && !this.props.user.attribute('clarkwinkelmannStatusText'),
+                    disabled: !this.attrs.user.attribute('clarkwinkelmannStatusEmoji') && !this.attrs.user.attribute('clarkwinkelmannStatusText'),
                     className: 'Button',
                     onclick: () => {
                         this.loading = true;
 
-                        this.props.user.save({
+                        this.attrs.user.save({
                             clarkwinkelmannStatusEmoji: null,
                             clarkwinkelmannStatusText: null,
                         }).then(() => {
@@ -92,8 +94,7 @@ export default class StatusModal extends Modal {
                             throw e;
                         });
                     },
-                    children: app.translator.trans(translationPrefix + 'clear'),
-                }),
+                }, app.translator.trans(translationPrefix + 'clear')),
             ]),
         ]);
     }
@@ -103,7 +104,7 @@ export default class StatusModal extends Modal {
 
         this.loading = true;
 
-        this.props.user.save({
+        this.attrs.user.save({
             clarkwinkelmannStatusEmoji: this.emoji,
             clarkwinkelmannStatusText: this.text,
         }).then(() => {

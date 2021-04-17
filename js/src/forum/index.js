@@ -1,25 +1,23 @@
-import {extend} from 'flarum/extend';
-import app from 'flarum/app';
-import SessionDropdown from 'flarum/components/SessionDropdown';
-import Button from 'flarum/components/Button';
-import UserCard from 'flarum/components/UserCard';
-import UserControls from 'flarum/utils/UserControls';
+import {extend} from 'flarum/common/extend';
+import SessionDropdown from 'flarum/forum/components/SessionDropdown';
+import Button from 'flarum/common/components/Button';
+import UserCard from 'flarum/forum/components/UserCard';
+import UserControls from 'flarum/forum/utils/UserControls';
 import StatusModal from './components/StatusModal';
 
-/* global m */
+/* global app, m */
 
-app.initializers.add('clarkwinkelmann/status', () => {
+app.initializers.add('clarkwinkelmann-status', () => {
     extend(SessionDropdown.prototype, 'items', function (items) {
         if (app.session.user.attribute('clarkwinkelmannStatusCanEdit')) {
             items.add('clarkwinkelmann-status', Button.component({
                 icon: 'fas fa-grin',
-                children: app.translator.trans('clarkwinkelmann-status.forum.menu.set-status'),
                 onclick() {
-                    app.modal.show(new StatusModal({
+                    app.modal.show(StatusModal, {
                         user: app.session.user,
-                    }));
+                    });
                 },
-            }));
+            }, app.translator.trans('clarkwinkelmann-status.forum.menu.set-status')));
         }
     });
 
@@ -27,18 +25,17 @@ app.initializers.add('clarkwinkelmann/status', () => {
         if (user.attribute('clarkwinkelmannStatusCanEdit')) {
             items.add('clarkwinkelmann-status', Button.component({
                 icon: 'fas fa-grin',
-                children: app.translator.trans('clarkwinkelmann-status.forum.menu.set-status'),
                 onclick() {
-                    app.modal.show(new StatusModal({
+                    app.modal.show(StatusModal, {
                         user,
-                    }));
+                    });
                 },
-            }));
+            }, app.translator.trans('clarkwinkelmann-status.forum.menu.set-status')));
         }
     });
 
     extend(UserCard.prototype, 'infoItems', function (items) {
-        const user = this.props.user;
+        const user = this.attrs.user;
 
         if (user.attribute('clarkwinkelmannStatusEmoji') || user.attribute('clarkwinkelmannStatusText')) {
             items.add('clarkwinkelmann-status', m('.ClarkWinkelmannStatus', [

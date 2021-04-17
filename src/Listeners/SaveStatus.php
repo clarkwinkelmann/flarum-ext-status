@@ -1,46 +1,33 @@
 <?php
 
-namespace ClarkWinkelmann\Status\Extenders;
+namespace ClarkWinkelmann\Status\Listeners;
 
-use ClarkWinkelmann\Status\Policies\UserPolicy;
 use ClarkWinkelmann\Status\Validators\EmojiValidator;
 use ClarkWinkelmann\Status\Validators\TextValidator;
-use Flarum\Extend\ExtenderInterface;
-use Flarum\Extension\Extension;
 use Flarum\Settings\SettingsRepositoryInterface;
-use Flarum\User\AssertPermissionTrait;
 use Flarum\User\Event\Saving;
-use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Arr;
 
-class SaveStatus implements ExtenderInterface
+class SaveStatus
 {
-    use AssertPermissionTrait;
-
-    public function extend(Container $container, Extension $extension = null)
-    {
-        $container['events']->subscribe(UserPolicy::class);
-        $container['events']->listen(Saving::class, [$this, 'saving']);
-    }
-
-    public function saving(Saving $event)
+    public function handle(Saving $event)
     {
         $attributes = Arr::get($event->data, 'attributes', []);
 
         if (array_key_exists('clarkwinkelmannStatusEmoji', $attributes)) {
-            $this->assertCan($event->actor, 'clarkwinkelmannStatusEdit', $event->user);
+            $event->actor->assertCan('clarkwinkelmannStatusEdit', $event->user);
 
             /**
              * @var $settings SettingsRepositoryInterface
              */
-            $settings = app(SettingsRepositoryInterface::class);
+            $settings = resolve(SettingsRepositoryInterface::class);
 
             $emoji = $attributes['clarkwinkelmannStatusEmoji'];
 
             /**
              * @var $validator EmojiValidator
              */
-            $validator = app(EmojiValidator::class);
+            $validator = resolve(EmojiValidator::class);
 
             if ($settings->get('clarkwinkelmann-status.onlyCountries')) {
                 $validator->onlyFlags();
@@ -58,7 +45,7 @@ class SaveStatus implements ExtenderInterface
                 /**
                  * @var $validator TextValidator
                  */
-                $validator = app(TextValidator::class);
+                $validator = resolve(TextValidator::class);
                 $validator->assertValid([
                     'text' => $text,
                 ]);

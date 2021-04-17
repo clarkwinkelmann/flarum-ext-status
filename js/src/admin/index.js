@@ -1,29 +1,31 @@
-import {extend} from 'flarum/extend';
-import app from 'flarum/app';
-import StatusSettingsModal from './components/StatusSettingsModal';
-import PermissionGrid from 'flarum/components/PermissionGrid';
+/* global app */
 
-app.initializers.add('clarkwinkelmann/status', () => {
-    app.extensionSettings['clarkwinkelmann-status'] = () => app.modal.show(new StatusSettingsModal());
-
-    extend(PermissionGrid.prototype, 'viewItems', items => {
-        items.add('clarkwinkelmann-status-see', {
+app.initializers.add('clarkwinkelmann-status', () => {
+    app.extensionData.for('clarkwinkelmann-status')
+        .registerSetting({
+            setting: 'clarkwinkelmann-status.onlyCountries',
+            type: 'switch',
+            label: app.translator.trans('clarkwinkelmann-status.admin.settings.only-countries')
+        })
+        .registerSetting({
+            setting: 'clarkwinkelmann-status.enableText',
+            type: 'switch',
+            label: app.translator.trans('clarkwinkelmann-status.admin.settings.enable-text')
+        })
+        .registerPermission({
             icon: 'fas fa-grin',
             label: app.translator.trans('clarkwinkelmann-status.admin.permissions.see'),
             permission: 'clarkwinkelmann-status.see',
             allowGuest: true,
-        });
-
-        items.add('clarkwinkelmann-status-set', {
+        }, 'view')
+        .registerPermission({
             icon: 'fas fa-grin',
             label: app.translator.trans('clarkwinkelmann-status.admin.permissions.set'),
             permission: 'clarkwinkelmann-status.set',
-        });
-
-        items.add('clarkwinkelmann-status-mod', {
+        }, 'view')
+        .registerPermission({
             icon: 'fas fa-grin',
             label: app.translator.trans('clarkwinkelmann-status.admin.permissions.mod'),
             permission: 'clarkwinkelmann-status.mod',
-        });
-    });
+        }, 'view');
 });
